@@ -1,5 +1,29 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代四：Agent Skill 化与发布
+
+### 应用侧改动
+
+- **内嵌数据冷启动**：`<script type="application/json" id="weaveboard-seed">` 块 + 启动顺序 `LocalStorage → 内嵌 seed → 默认种子`，载入内嵌数据时 toast 提示。这是 skill 管线的使能改动：HTML 成为可注入数据的"模板"。
+- 数据注入的 `</script>` 闭合风险由生成脚本统一转义（`</` → `<\/`，JSON 合法转义）。
+- 首次选中卡片初始化修复（原硬编码 `selected='prototype'`）。
+
+### Skill 包（skills/weaveboard-pm/）
+
+- `new_board.mjs`：数据 + 引擎 → 内嵌 seed 的成品看板；`inject_data.mjs`：原位更新数据块（单块校验）；`sync_engine.sh`：从仓库同步引擎并校验版本标记。
+- `validate_board.mjs`：镜像应用 `validate()` 全部规则 + CPM 无头移植（与应用同算法），输出关键链与浮时；错误 exit 1。
+- `references/schema.md`（字段契约）+ `authoring.md`（PM 编写规范）+ `examples/api-refactor.weaveboard.json`。
+
+### 验证记录
+
+- 脚本：示例数据校验通过且关键链（阻塞→影子流量→M2）与浏览器实测一致；坏数据 8 项错误全命中、exit 1；生成注入后 seed 块唯一且 JSON 可解析。
+- E2E：`new_board` 产物部署后清空 LocalStorage 冷启动，自动载入生成项目（toast「已载入内嵌项目数据」），驾驶舱关键链与校验器输出一致。
+- 本地安装到 `~/.zcode/skills/weaveboard-pm` 并复跑校验通过。
+
+### 发布化
+
+双语 README（英文主 + README.zh-CN.md）、MIT License、PROMOTION.md 推广手册、docs/（Pages 演示页 + 四视图截图）。
+
 ## 2026-09 迭代三：Excel 与 Word 报告导出
 
 ### 实现方式

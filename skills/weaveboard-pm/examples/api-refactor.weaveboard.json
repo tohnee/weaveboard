@@ -1,0 +1,41 @@
+{
+  "format": "weaveboard/v2",
+  "version": 2,
+  "board": {
+    "id": "api-refactor",
+    "name": "开放 API 网关重构",
+    "template": "tech",
+    "view": "dashboard",
+    "camera": { "zoom": 0.8, "offsetX": 20, "offsetY": 10 }
+  },
+  "cards": [
+    { "id": "m1", "kind": "milestone", "title": "M1 · 契约冻结", "body": "OpenAPI 3.1 规范定稿，消费方签认。", "x": 620, "y": 100, "w": 270, "accent": "#f4b860", "tilt": -1, "status": "in-progress", "priority": "critical", "assignee": "平台组", "startDate": "2026-10-09", "dueDate": "2026-10-16", "estimateHours": 24, "progress": 60, "wbsOrder": 1 },
+    { "id": "m2", "kind": "milestone", "title": "M2 · 双网关并行上线", "body": "新旧网关按路由灰度，观察一周后旧网关只读。", "x": 1480, "y": 100, "w": 270, "accent": "#f4b860", "tilt": 1, "status": "not-started", "priority": "critical", "assignee": "平台组", "startDate": "2026-11-20", "dueDate": "2026-11-27", "estimateHours": 16, "wbsOrder": 2 },
+    { "id": "spec", "kind": "document", "title": "网关选型对比", "body": "Envoy vs 自研：社区、Filter 生态、运维成本三个维度。", "x": 180, "y": 180, "w": 245, "accent": "#78b8aa", "tilt": -1.5 },
+    { "id": "auth", "parentId": "m1", "kind": "task", "title": "鉴权中间件迁移", "body": "JWT 校验下沉到网关，业务侧只读声明。", "x": 400, "y": 340, "w": 250, "accent": "#8fb5ff", "tilt": 1, "status": "in-progress", "priority": "high", "assignee": "吴", "startDate": "2026-10-09", "dueDate": "2026-10-23", "estimateHours": 40, "actualHours": 16, "progress": 40, "wbsOrder": 1 },
+    { "id": "ratelimit", "parentId": "m1", "kind": "task", "title": "限流与熔断规则迁移", "body": "按消费方维度配置令牌桶；熔断规则与注册表联动。", "x": 720, "y": 420, "w": 250, "accent": "#8fb5ff", "tilt": -0.8, "status": "not-started", "priority": "high", "assignee": "郑", "startDate": "2026-10-23", "dueDate": "2026-11-06", "estimateHours": 56, "wbsOrder": 2 },
+    { "id": "shadow", "parentId": "m2", "kind": "task", "title": "影子流量对比", "body": "双写请求复制，diff 报告按日输出，错误率 < 0.1% 才放量。", "x": 1100, "y": 420, "w": 255, "accent": "#8fb5ff", "tilt": 0.9, "status": "not-started", "priority": "critical", "assignee": "王", "startDate": "2026-11-06", "dueDate": "2026-11-20", "estimateHours": 64, "wbsOrder": 1 },
+    { "id": "docs", "parentId": "m2", "kind": "task", "title": "消费方迁移文档", "body": "按调用频次排序的迁移批次表 + 回滚预案。", "x": 1420, "y": 560, "w": 250, "accent": "#8fb5ff", "tilt": -1.1, "status": "not-started", "priority": "medium", "assignee": "林", "startDate": "2026-11-13", "dueDate": "2026-11-25", "estimateHours": 32, "wbsOrder": 2 },
+    { "id": "perf", "parentId": "m2", "kind": "blocker", "title": "长尾延迟 P99 超标", "body": "压测下网关新增 8ms P99，怀疑 TLS 握手未复用。", "x": 1080, "y": 700, "w": 250, "accent": "#e7746b", "tilt": 1.2, "status": "blocked", "priority": "critical", "assignee": "吴", "startDate": "2026-11-02", "dueDate": "2026-11-13", "estimateHours": 24, "actualHours": 8, "progress": 30, "wbsOrder": 3 },
+    { "id": "adr-envoy", "kind": "decision", "title": "ADR-01 · 网关选用 Envoy", "body": "自研沉没成本高、Filter 生态成熟；代价是团队需要补 C++ 排障能力。", "x": 170, "y": 520, "w": 258, "accent": "#7d95b5", "tilt": 1.4, "decisionStatus": "accepted", "decisionDate": "2026-10-02" },
+    { "id": "risk-migration", "kind": "risk", "title": "风险 · 消费方迁移拖延", "body": "14 个消费方排期不受平台组控制。", "x": 480, "y": 840, "w": 258, "accent": "#d9954f", "tilt": -1.4, "riskProb": "high", "riskImpact": "medium", "riskResponse": "mitigate", "mitigation": "按调用量分三批迁移；每批设卡点评审，卡点未过则冻结下一批。" },
+    { "id": "risk-p99", "kind": "risk", "title": "风险 · P99 劣化放量风险", "body": "网关层劣化叠加业务超时预算，可能触发雪崩。", "x": 860, "y": 940, "w": 252, "accent": "#d9954f", "tilt": 1.2, "riskProb": "medium", "riskImpact": "high", "riskResponse": "mitigate", "mitigation": "放量前置条件：P99 劣化 < 3ms；超时预算联动演练先行。" },
+    { "id": "lin", "kind": "person", "title": "林 · 平台负责人", "body": "对迁移节奏与灰度开关负责。", "x": 180, "y": 760, "w": 218, "accent": "#b496e8", "tilt": 1.1 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "spec", "to": "m1", "color": "#78b8aa", "label": "选型依据" },
+    { "id": "e2", "from": "auth", "to": "ratelimit", "color": "#597fba", "label": "完成后开始", "dependencyType": "FS", "lagDays": 0 },
+    { "id": "e3", "from": "ratelimit", "to": "shadow", "color": "#597fba", "label": "完成后开始", "dependencyType": "FS", "lagDays": 0 },
+    { "id": "e4", "from": "shadow", "to": "m2", "color": "#597fba", "label": "完成后开始", "dependencyType": "FS", "lagDays": 0 },
+    { "id": "e5", "from": "docs", "to": "m2", "color": "#597fba", "label": "完成后开始", "dependencyType": "FS", "lagDays": 0 },
+    { "id": "e6", "from": "perf", "to": "shadow", "color": "#597fba", "label": "解除后开始", "dependencyType": "FS", "lagDays": 0 },
+    { "id": "e7", "from": "adr-envoy", "to": "auth", "color": "#7d95b5", "label": "落地" },
+    { "id": "e8", "from": "risk-migration", "to": "docs", "color": "#d9954f", "label": "缓解于" },
+    { "id": "e9", "from": "risk-p99", "to": "perf", "color": "#d9954f", "label": "威胁" },
+    { "id": "e10", "from": "lin", "to": "m1", "color": "#b496e8", "label": "负责" }
+  ],
+  "assets": [],
+  "customTypes": [],
+  "customFields": {},
+  "settings": { "gravity": 0.045, "damping": 0.91, "reducedMotion": false, "ropeLayer": "behind-cards", "focusRopes": true }
+}

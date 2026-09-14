@@ -1,66 +1,90 @@
-# Weaveboard Offline · 技术项目管理面板
+<div align="center">
 
-直接双击 `weaveboard-offline.html` 即可离线使用，无需安装或联网。默认载入技术项目模板「交易链路重构」，通过顶部"模板"可切换为旅行规划看板。
+# Weaveboard
 
-## 项目管理机制
+**Offline-first project management for technical teams — in a single HTML file.**
 
-- **概览驾驶舱**：任务数、按完成工时的进度、受阻数、高风险数、7 天内到期、工时投入一屏尽收；下方并列关键路径链、阻塞清单、风险登记册（按风险分排序）与决策记录。
-- **依赖管理（PDM）**：任务间支持 FS / SS / FF / SF 四种依赖类型 + 滞后天数，可在右侧属性面板直接编辑或删除关系；连接两个任务自动创建 FS 依赖。
-- **关键路径（CPM）**：按起止日期与依赖做前向/后向推演，自动算出零浮时关键链——空间视图红色绳索、WBS 行高亮与浮时提示、甘特条描边、驾驶舱排序链四处联动；修改依赖或日期即时重算。
-- **风险登记册**：独立的"风险"对象，概率 × 影响得出 1–9 风险分，配套应对策略（减轻/规避/转移/接受）与应对措施；高分风险自动进入驾驶舱跟踪。
-- **决策记录（ADR）**：独立的"决策"对象，提议中/已接受/已替代/已废弃状态机 + 决策日期，技术选型有据可查。
-- **状态看板**：未开始/进行中/受阻/已完成四列流转，关键路径任务带"关键"标记，一键推进状态。
-- **WBS**：父子任务、自动编号、负责人、优先级、日期、工时、按工时加权汇总进度和甘特计划。
-- **导出 Excel（.xlsx）**：五个工作表——项目概览（指标汇总）、任务清单（WBS 编号/日期/工时/进度/浮时/关键路径）、风险登记册、决策记录、依赖关系；表头加粗，数字为真实数值可直接汇总计算。
-- **导出 Word 报告（.docx）**：六个章节——项目概览表、关键路径链、任务分解（WBS）表、风险登记册表、决策记录表、依赖关系表，标题样式与表格边框齐全，可直接作为周报/评审材料。
-- 两种文档导出均为零依赖手写 OpenXML 打包（复用内置 ZIP 写入器），导出前自动执行数据校验。
+WBS · CPM Critical Path · Risk Register · ADR Decisions · Kanban · Excel/Word Export
 
-## 基础能力
+[![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
+[![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
+[![Single File](https://img.shields.io/badge/deliverable-1%20HTML%20file-f4b860.svg)](#)
 
-- 空间、概览、WBS、看板、时间线与图谱视图；旅行模板下自动切换为行程视图。
-- 自由拖拽、平移、滚轮缩放、Shift 套索/点选多选、成组拖动、多选删除、适应画布。
-- 撤销 / 重做（Ctrl/⌘+Z，最多 40 步）；Esc 逐级取消；弹窗回车提交。
-- Canvas 底层绳索：静止收紧、拖动摆动、选中弱化无关关系、关键路径红色高亮；卡片轮廓像素级挖空，连线永不穿过卡片。
-- LocalStorage 自动保存、12 份版本快照；图片/文档附件存 IndexedDB。
-- `weaveboard/v2` JSON 校验导入导出；完整 ZIP（含附件）导入导出；导出校验覆盖依赖类型、风险与决策字段。
+**[🌐 Live Demo](https://tohnee.github.io/weaveboard/)** · **[中文文档](README.zh-CN.md)**
 
-## 数据安全
+</div>
 
-数据只保存在当前浏览器和设备。清理浏览器数据前，请先从"数据与备份"导出 JSON。
+---
 
-## 2026-09 更新：体验优化与问题修复
+![Dashboard](docs/assets/dashboard.png)
 
-- 撤销 / 重做：`Ctrl/⌘+Z` 撤销、`Ctrl/⌘+Shift+Z` 重做，顶栏新增按钮，最多回退 40 步。
-- 套索 / Shift 点选多个对象后，拖动任意选中卡片即可整组移动；Delete / Backspace 一次删除全部选中。
-- 字号体系整体上调（原 8/9/10px → 10/11/12px），WBS 列宽同步加宽，小屏可读性明显改善。
-- 绳索渲染性能：卡片高度在重绘时一次测量并缓存，消除每帧的重复 DOM 查询。
-- 选中卡片时弱化无关绳索（focusRopes）；系统或看板设置开启"减弱动态效果"后，绳索不再摆动。
-- 键盘焦点高亮（focus-visible）、Esc 关闭弹窗 / 取消连接 / 清除多选、创建弹窗支持回车提交。
-- 清理了旧 SVG 连线方案的残留代码；提示文案改为用户视角。
+Most PM tools want an account, a server, and your data. Weaveboard is the opposite: **one HTML file, zero dependencies, data never leaves the machine**. Double-click it and you get a full technical-PM cockpit — work breakdown, dependency network, CPM critical path, a risk register, decision records, and real Excel/Word export. It also ships as an **agent skill**, so an AI assistant can turn a project brief into a working board.
 
-## 本次重点修复
+## Why you might like it
 
-- 连线从动态 SVG 蒙版重构为独立 Canvas 底层，卡片 DOM 始终位于其上方，避免本地文件模式和 Safari 对动态 SVG mask 的兼容性差异。
-- 每一帧绘制完绳索后，使用 `destination-out` 按卡片的实际宽高、旋转角度和圆角轮廓做像素级挖空；连线即使交叉经过第三个对象，也不会显示在方框内部。
-- 绳索仍从对象中心连接，但卡片范围内的像素被完全清除，因此视觉上会从对象背后自然延伸出来。
-- 静止时绳索自动收紧、降低对比度；拖动关联卡片时才增加摆动和高亮，但仍不会覆盖卡片。
-- 连线层设置 `pointer-events: none`，不会拦截卡片点击、表单编辑、套索或拖拽操作。
-- 卡片使用不透明纸张背景，可自然遮挡从其背后经过的其他关系线。
+- **Truly offline.** No install, no build, no network. Email the file, put it on a USB stick — it just works, even from `file://`.
+- **Real PM mechanics, not checkboxes.** FS/SS/FF/SF dependencies with lag, forward/backward-pass critical path with float, probability×impact risk scoring, ADR status machine.
+- **One artifact, whole project.** Board JSON is embedded in the file and lives in your browser; export to `.xlsx`/`.docx` (hand-written OOXML — still zero dependencies) whenever you need to report.
 
-## 主要能力
+## Feature tour
 
-- 自由拖拽、平移、滚轮缩放、Shift 套索多选和自动适应画布。
-- 任务、里程碑、阻塞、便签、人物、地点、文档和图片对象。
-- 空间、WBS、行程、时间线与图谱视图。
-- WBS 父子任务、自动编号、负责人、状态、优先级、日期、工时、进度汇总和甘特计划。
-- 连接两个任务时自动创建 FS 前置依赖。
-- 旅行规划模板：支持整段旅行、交通、住宿、景点、餐饮、活动、预算和旅行待办。
-- 行程按天分组，显示时间、地点、费用、币种、预订状态、预订号和风险；可直接新增行程项目并在右侧属性面板编辑。
-- LocalStorage 自动保存和最多 12 个版本快照。
-- 图片、文档附件保存到 IndexedDB。
-- `weaveboard/v2` JSON 校验、导入和导出，并兼容旧版常用本地存储键。
-- 完整 ZIP 导入导出：看板 JSON 与 IndexedDB 附件一起迁移，在线版生成的常见 ZIP 压缩条目也可读取。
+| | |
+|---|---|
+| **Spatial canvas** — cards connected by physics-simulated ropes; the critical path glows red and ropes never cross a card. | ![Space view](docs/assets/space.png) |
+| **WBS + Gantt** — auto-numbered breakdown, weighted progress rollup, float tooltips, critical rows highlighted. | ![WBS view](docs/assets/wbs.png) |
+| **Status kanban** — four-column flow with one-click status advance and critical-path badges. | ![Kanban view](docs/assets/kanban.png) |
+| **Project cockpit** — progress, blockers, high risks, due-soon, hours invested, and the critical chain at a glance. | ![Dashboard](docs/assets/dashboard.png) |
 
-## 数据安全
+Plus: timeline & graph views, travel-planning template (itinerary by day, budget by currency, booking status), LocalStorage autosave with 12 snapshots, undo/redo (40 steps), multi-select group drag, keyboard-first UX, `prefers-reduced-motion` support.
 
-数据只保存在当前浏览器和设备。清理浏览器数据前，请先从“数据与备份”导出 JSON。
+## Quick start
+
+1. Download [`weaveboard-offline.html`](weaveboard-offline.html) (or try the [live demo](https://tohnee.github.io/weaveboard/)).
+2. Double-click it. A sample project loads — explore 概览/空间/WBS/看板 views.
+3. Make it yours: edit cards in the right panel, or **模板** to start fresh.
+
+Export at any time from **数据与备份**: Excel workbook (5 sheets: overview / tasks / risks / decisions / dependencies), Word report (6 sections), JSON, or a full ZIP with attachments.
+
+## The agent skill
+
+The [`skills/weaveboard-pm/`](skills/weaveboard-pm/) directory is a complete agent skill: give an AI assistant your project brief and it generates a validated board file you can open directly.
+
+```bash
+# Install into your agent's skill directory (ZCode / Claude Code style)
+cp -r skills/weaveboard-pm ~/.zcode/skills/        # or ~/.claude/skills/
+```
+
+The skill enforces a hard verification loop — generated data must pass `validate_board.mjs` (15+ schema rules + a headless CPM recomputation) before a board file is produced:
+
+```bash
+node scripts/validate_board.mjs examples/api-refactor.weaveboard.json
+node scripts/new_board.mjs  examples/api-refactor.weaveboard.json -o my-board.html
+```
+
+Data contract: [`skills/weaveboard-pm/references/schema.md`](skills/weaveboard-pm/references/schema.md) · Authoring guide: [`authoring.md`](skills/weaveboard-pm/references/authoring.md)
+
+## Data model in 30 seconds
+
+```jsonc
+{
+  "board": { "name": "交易链路重构", "template": "tech", "view": "dashboard" },
+  "cards": [ { "id": "writepath", "kind": "task", "parentId": "m1",
+               "status": "in-progress", "startDate": "2026-07-21", "dueDate": "2026-08-07",
+               "estimateHours": 96, "assignee": "郑", "progress": 45 } ],
+  "edges": [ { "id": "e2", "from": "contract", "to": "writepath",
+               "dependencyType": "FS", "lagDays": 0 } ]
+}
+```
+
+Ten card kinds (task / milestone / blocker / risk / decision / person / document / note / place / image), four dependency types, risk = probability × impact (1–9). Everything is a flat, enumerable schema — friendly to humans, scripts, and LLMs alike.
+
+## Roadmap
+
+- [ ] Script-side export (generate xlsx/docx without opening the app)
+- [ ] Markdown-brief → board one-shot conversion
+- [ ] Baseline snapshots & SPI/CPI earned-value metrics
+- [ ] Plugin packaging for skill marketplaces
+
+## License
+
+[MIT](LICENSE) © 2026
