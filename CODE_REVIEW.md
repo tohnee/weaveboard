@@ -1,5 +1,21 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代三：Excel 与 Word 报告导出
+
+### 实现方式
+
+零依赖手写 OpenXML：`.xlsx` 与 `.docx` 本质是 ZIP 包裹的 XML，复用应用内已有的 `makeZip`（STORE 模式 + CRC32）写入器，不引入任何外部库。
+
+- **`exportXlsx()`**：5 个工作表（项目概览/任务清单/风险登记册/决策记录/依赖关系）。单元格用 `inlineStr` 规避 sharedStrings 部件；工时/进度/浮时/滞后存为真实数值单元格（可直接 SUM/筛选）；表头走 `styles.xml` 的加粗字体样式（`cellXfs` xf 1）。部件：`[Content_Types].xml`、`_rels/.rels`、`xl/workbook.xml`(+rels)、`xl/styles.xml`、`xl/worksheets/sheet1-5.xml`。
+- **`exportDocx()`**：报告体 `wP()`（段落，支持 Title/Heading1 样式）+ `wTbl()`（表格，显式六向边框 + 表头底纹 `EAF1EC`，`tblW pct` 自适应）。六个章节：项目概览、关键路径、WBS、风险登记册、决策记录、依赖关系；风险应对措施超 200 字符自动截断加省略号。部件：`[Content_Types].xml`、`_rels/.rels`、`word/_rels/document.xml.rels`、`word/styles.xml`、`word/document.xml`（A4 `sectPr`）。
+- 数据准备收敛到 `pmData()` 单一来源，两处导出与概览视图共享同一套口径（任务数/进度/受阻/高风险/关键路径/完工推演/工时）。
+- 入口在"数据与备份"弹窗，与 JSON/ZIP 导出一样先过 `validate()` 校验；旅行模板下风险/决策表为仅表头的空表，导出路径一致。
+
+### 回归验证
+
+- 浏览器实测拦截导出 blob 并页内解包：xlsx 10 部件、docx 5 部件齐全；workbook 含中文工作表名；任务清单表头含加粗样式与 inlineStr；docx 六个章节标题、关键路径链（含"浮时 0 天"）、风险表内容（对账措施）均在；两文件共 15 个 XML/rels 部件全部通过 DOMParser 良构校验（无 parsererror，即 Office 打不开的"文件损坏"类问题排除）。
+- 旅行模板导出：概览含旅行名，风险表仅表头，任务表 7 行（表头+6 任务），空表不崩溃。
+
 ## 2026-09 迭代二：重构为技术项目管理面板
 
 ### 机制映射
