@@ -1,0 +1,8 @@
+# 本地工具状态与预览目录
+.v2c/
+.video_agent/
+.mimosa/
+preview/
+
+# 过期的旧版打包备份（源码即 weaveboard-offline.html 单文件）
+*.zip
