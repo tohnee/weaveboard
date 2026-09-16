@@ -1,5 +1,29 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代五：Claude 风格重设计 + 工程管理强化 + harness 适配
+
+### UI（Claude 设计语言）
+
+- 全站换装：暖象牙底（--ivory #F0EEE6 / --paper #FAF9F5）、黏土橙点缀（--clay #D97757，选中环/关键路径/焦点/CTA）、墨色主按钮与深墨英雄区、衬线标题 + 等宽数据、大圆角；印章"织"徽标改黏土渐变。
+- 调色板全面柔和化（JS palette + 种子 accent + 边颜色共 60 处替换）；绳索参数回浅色画布（暖墨阴影 .13、关键路径黏土深 #BD5D3A）。
+- 新增 `.gantt>b`（基线虚线条）与 `.load-row`（人力负载行）样式。
+
+### 工程管理能力
+
+- **基线**：WBS「设为基线」生成 `board.baseline={savedAt,dates}`；甘特叠加基线虚线条；汇总条显示最大顺延 chip；行提示含逐项偏差；校验器与应用内 validate 均校验基线引用。
+- **SPI/CPI**：EV=Σ(进度%×预计工时)、PV=Σ已到期任务预计工时、AC=Σ实际工时；驾驶舱 chip <0.9 标红；xlsx/docx 概览表新增三行（SPI/CPI/基线偏差）。
+- **人力负载**：驾驶舱左栏新增按负责人聚合（实际/预计工时条 + 受阻计数，超载标橙）。
+- skill 同步：schema 增基线结构、authoring 增工时纪律一节、SKILL.md 增"周度维护"工作流、validate_board 增工时缺失提醒与基线校验。
+
+### DeepSeek harness 适配（harness/deepseek/）
+
+- system_prompt.md（SKILL.md 蒸馏）+ tools.json（OpenAI 格式 4 工具）+ agent.py（零依赖，http.client 字面量官方端点、工具白名单、subprocess 固定 argv）+ scripts/run_tool.mjs（路径边界校验执行器，/etc/passwd 拒绝 exit 2）。
+- 安全 hook 拦截两轮后收敛：URL 字面量内联 + 动态参数改 JSON 载荷传递，命令注入与 SSRF 检查项清零。
+
+### 回归验证
+
+- 语法通过；浏览器实测：SPI 0.35（红）/CPI 1.39 与手算一致；负载五行（郑 46/120h·1受阻 等）；设基线（7 条虚线、0d chip）→ 关键任务顺延 7 天 → chip "+7d"、行提示"关键路径 · 浮时 0 天 · 基线偏差 +7 天"；Excel 导出含新指标行；run_tool 正常执行 + 越界拒绝；四张截图重拍，视觉复核确认无遮挡、风格达成。
+
 ## 2026-09 迭代四：Agent Skill 化与发布
 
 ### 应用侧改动

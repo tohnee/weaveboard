@@ -4,7 +4,9 @@
 
 **Offline-first project management for technical teams — in a single HTML file.**
 
-WBS · CPM Critical Path · Risk Register · ADR Decisions · Kanban · Excel/Word Export
+WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · ADR Decisions · Kanban · Excel/Word Export
+
+*Claude-inspired design: warm ivory, clay accents, serif headings — an engineering ledger that feels like paper, works like an instrument.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
@@ -24,6 +26,7 @@ Most PM tools want an account, a server, and your data. Weaveboard is the opposi
 
 - **Truly offline.** No install, no build, no network. Email the file, put it on a USB stick — it just works, even from `file://`.
 - **Real PM mechanics, not checkboxes.** FS/SS/FF/SF dependencies with lag, forward/backward-pass critical path with float, probability×impact risk scoring, ADR status machine.
+- **Engineering-management grade.** Set a schedule **baseline** and track variance day-by-day on the Gantt; **SPI/CPI** earned-value indices flag schedule/cost drift; a **workload panel** shows actual-vs-estimated hours per assignee.
 - **One artifact, whole project.** Board JSON is embedded in the file and lives in your browser; export to `.xlsx`/`.docx` (hand-written OOXML — still zero dependencies) whenever you need to report.
 
 ## Feature tour
@@ -62,6 +65,10 @@ node scripts/new_board.mjs  examples/api-refactor.weaveboard.json -o my-board.ht
 ```
 
 Data contract: [`skills/weaveboard-pm/references/schema.md`](skills/weaveboard-pm/references/schema.md) · Authoring guide: [`authoring.md`](skills/weaveboard-pm/references/authoring.md)
+
+### Other harnesses (DeepSeek & friends)
+
+[`harness/deepseek/`](harness/deepseek/) adapts the same four scripts to any OpenAI-compatible function-calling harness: a distilled system prompt, a `tools.json` manifest, and a zero-dependency `agent.py` (whitelisted endpoint, path-bounded tool runner). See its [README](harness/deepseek/README.md).
 
 ## Data model in 30 seconds
 

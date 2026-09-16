@@ -59,10 +59,14 @@ for (const c of d.cards || []) {
 for (const c of d.cards || []) {
   if (TRACKED.has(c.kind) && (!c.startDate || !c.dueDate)) warnings.push(`任务缺起止日期，将不参与关键路径: ${c.title || c.id}`);
   if (c.kind === 'risk' && !c.mitigation) warnings.push(`风险未写应对措施: ${c.title || c.id}`);
+  if (TRACKED.has(c.kind) && !(Number(c.estimateHours) > 0)) warnings.push(`任务缺预计工时，影响 SPI/CPI 与加权进度: ${c.title || c.id}`);
 }
 const depEdges = (d.edges || []).filter(e => e.dependencyType);
 if ((d.cards || []).filter(c => TRACKED.has(c.kind)).length > 1 && depEdges.length === 0) {
   warnings.push('任务之间没有任何依赖（FS/SS/…），关键路径无法计算');
+}
+if (d.board?.baseline?.dates) {
+  for (const id of Object.keys(d.board.baseline.dates)) if (!ids.has(id)) errors.push(`基线引用了不存在对象: ${id}`);
 }
 
 // ---- CPM 试算（与应用内 criticalPath() 同算法）----

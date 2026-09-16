@@ -4,7 +4,9 @@
 
 **单文件 HTML 的离线项目管理看板——数据永不离机。**
 
-WBS 任务分解 · CPM 关键路径 · 风险登记册 · ADR 决策记录 · 状态看板 · Excel / Word 导出
+WBS 任务分解 · CPM 关键路径 · 基线与偏差 · SPI/CPI 效率 · 风险登记册 · ADR 决策记录 · 状态看板 · Excel / Word 导出
+
+*Claude 风格设计语言：暖象牙底、黏土橙点缀、衬线标题——一本"纸质感的工程台账"。*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
@@ -33,6 +35,9 @@ WBS 任务分解 · CPM 关键路径 · 风险登记册 · ADR 决策记录 · �
 
 - 依赖管理（PDM）：FS / SS / FF / SF 四种依赖类型 + 滞后天数，属性面板内直接编辑
 - 关键路径（CPM）：按起止日期与依赖前向/后向推演，浮时与零浮时链在四个视图联动高亮，改数据即时重算
+- **基线与偏差**：WBS 一键"设为基线"，甘特以虚线保留基线条，汇总条实时显示最大顺延天数（基线偏差 chip）
+- **SPI/CPI 工程效率**：EV/PV 进度绩效与 EV/AC 投入效率自动计算（口径依赖工时纪律），低于 0.9 概览标红
+- **人力负载**：按负责人汇总实际/预计工时与受阻数，超载标橙，为资源调配提供依据
 - 风险登记册：概率 × 影响 = 1–9 风险分，应对策略（减轻/规避/转移/接受）与措施，高分风险自动进驾驶舱
 - 决策记录（ADR）：提议中/已接受/已替代/已废弃状态机 + 决策日期
 - 时间线 / 图谱视图、旅行规划模板（按天行程、双币种预算、预订状态）
@@ -62,6 +67,10 @@ node scripts/new_board.mjs  examples/api-refactor.weaveboard.json -o 我的看�
 ```
 
 数据契约：[`references/schema.md`](skills/weaveboard-pm/references/schema.md) · 编写规范：[`authoring.md`](skills/weaveboard-pm/references/authoring.md)
+
+### 其它 Harness（DeepSeek 等）
+
+[`harness/deepseek/`](harness/deepseek/) 把同一套四个脚本适配到任何 OpenAI 兼容的 function-calling harness：蒸馏版系统提示词 + `tools.json` 工具清单 + 零依赖 `agent.py`（端点白名单、工具路径边界校验），详见其 [README](harness/deepseek/README.md)。
 
 ## 数据安全
 

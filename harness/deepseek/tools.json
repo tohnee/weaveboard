@@ -1,0 +1,56 @@
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "validate_board",
+        "description": "校验 weaveboard/v2 看板数据：15+ 条结构规则（ID/坐标/枚举/日期顺序/依赖引用/父级成环/基线引用）+ CPM 关键路径无头试算。生成或修改数据后必须调用，直到输出『校验通过』。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "data_path": { "type": "string", "description": "看板 JSON 文件路径" }
+          },
+          "required": ["data_path"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "new_board",
+        "description": "用通过校验的 JSON 生成可双击打开的看板 HTML（数据内嵌，浏览器无旧数据时自动载入）。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "data_path": { "type": "string", "description": "看板 JSON 文件路径" },
+            "output_path": { "type": "string", "description": "输出的 HTML 路径，缺省与 JSON 同名" }
+          },
+          "required": ["data_path"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "inject_data",
+        "description": "把新 JSON 注入既有看板 HTML 的内嵌数据块（不改动引擎）。注入后需在应用『数据与备份』清空看板再刷新。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "html_path": { "type": "string", "description": "既有看板 HTML 路径" },
+            "data_path": { "type": "string", "description": "新的看板 JSON 路径" }
+          },
+          "required": ["html_path", "data_path"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sync_engine",
+        "description": "从 GitHub 仓库 tohnee/weaveboard 同步最新看板引擎到 skill 的 assets/（引擎与数据契约升级后调用）。",
+        "parameters": { "type": "object", "properties": {} }
+      }
+    }
+  ]
+}

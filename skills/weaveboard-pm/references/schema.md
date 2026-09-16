@@ -88,6 +88,13 @@
 | `dependencyType` | `FS` 完成→开始 / `SS` 开始→开始 / `FF` 完成→完成 / `SF` 开始→完成。**仅当 from、to 都是 task/milestone/blocker 时使用** |
 | `lagDays` | 滞后天数（数字 ≥ 0），仅依赖边有意义 |
 
+## 看板级字段 board（工程管理扩展）
+
+| 字段 | 说明 |
+|---|---|
+| `baseline` | 可选。`{ "savedAt": "ISO 时间", "dates": { "卡片id": { "s": "开始日期", "d": "截止日期" } } }`。WBS「设为基线」生成；引用的卡片 id 必须存在。设置后应用自动计算基线偏差（当前截止 − 基线截止的最大顺延天数），WBS 甘特以虚线条显示基线位置 |
+| SPI / CPI | 无需手写，应用按工时自动计算：EV=Σ(进度%×预计工时)，PV=Σ(已到期任务的预计工时)，AC=Σ实际工时；SPI=EV/PV（<1 进度落后），CPI=EV/AC（<1 投入超支）。**前提是任务都有 `estimateHours`，进行中任务及时更新 `actualHours` 与 `progress`** |
+
 ## 硬性校验规则（validate_board.mjs 会拦截）
 
 1. 卡片 id 非空且不重复；x/y 为数字
