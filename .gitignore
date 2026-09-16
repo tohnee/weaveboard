@@ -6,3 +6,6 @@ preview/
 
 # 过期的旧版打包备份（源码即 weaveboard-offline.html 单文件）
 *.zip
+
+# dsh bundle 的引擎为运行时按需拉取（weaveboard_sync_engine），不入库
+harness/deepseek/assets/

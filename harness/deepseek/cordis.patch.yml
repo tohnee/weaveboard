@@ -1,0 +1,6 @@
+# cordis.patch.yml — dsh bundle 配置层
+# 安装进 profile 后（dsh plugin --profile <name> add ./harness/deepseek），
+# 本层把 weaveboard-pm 插件行插入 Cordis 组合配置，工具注册进 ctx.tools。
+- insert:
+    - id: weaveboard-pm
+      name: dsh-weaveboard-pm

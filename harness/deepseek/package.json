@@ -1,0 +1,14 @@
+{
+  "name": "dsh-weaveboard-pm",
+  "version": "1.1.0",
+  "description": "Weaveboard PM tools for DeepSeek Harness (dsh): validate weaveboard/v2 boards, build standalone board HTML, inject data, sync engine.",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "files": ["index.js", "cordis.patch.yml", "scripts/", "README.md"],
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.2.0"
+  },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "keywords": ["dsh-plugin", "deepseek-harness", "weaveboard", "project-management"]
+}

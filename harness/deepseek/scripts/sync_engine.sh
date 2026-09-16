@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync_engine.sh — 从 GitHub 仓库同步最新引擎到本 skill 的 assets/
+# sync_engine.sh — 从 GitHub 仓库同步最新引擎到本 bundle 的 assets/
 # --http1.1 + 三次重试：raw.githubusercontent.com 在部分网络下 HTTP/2 不稳定
 set -euo pipefail
 cd "$(dirname "$0")/.."

@@ -68,9 +68,9 @@ node scripts/new_board.mjs  examples/api-refactor.weaveboard.json -o 我的看�
 
 数据契约：[`references/schema.md`](skills/weaveboard-pm/references/schema.md) · 编写规范：[`authoring.md`](skills/weaveboard-pm/references/authoring.md)
 
-### 其它 Harness（DeepSeek 等）
+### DeepSeek Harness 插件（dsh bundle）
 
-[`harness/deepseek/`](harness/deepseek/) 把同一套四个脚本适配到任何 OpenAI 兼容的 function-calling harness：蒸馏版系统提示词 + `tools.json` 工具清单 + 零依赖 `agent.py`（端点白名单、工具路径边界校验），详见其 [README](harness/deepseek/README.md)。
+[`harness/deepseek/`](harness/deepseek/) 是面向官方 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（`dsh`，"Everything is a Plugin"，Cordis 内核）的正规插件，按其公开的 bundle 规范编写：`package.json` 声明 `dsh.bundle` 清单 + `cordis.patch.yml` 配置层 + `index.js` 用 `defineTool` 向 `ctx.tools` 注册四个工具（`weaveboard_validate_board` / `weaveboard_new_board` / `weaveboard_inject_data` / `weaveboard_sync_engine`）。安装：`dsh plugin --profile <name> add ./harness/deepseek`。工具链（白名单、工作目录/插件目录路径边界、`shell:false`、`{ok, output}` 规范返回值）已对官方发布的 `@deepseek-ai/dsh-tools` 做过冒烟验证，详见其 [README](harness/deepseek/README.md)。
 
 ## 数据安全
 

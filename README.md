@@ -66,9 +66,9 @@ node scripts/new_board.mjs  examples/api-refactor.weaveboard.json -o my-board.ht
 
 Data contract: [`skills/weaveboard-pm/references/schema.md`](skills/weaveboard-pm/references/schema.md) · Authoring guide: [`authoring.md`](skills/weaveboard-pm/references/authoring.md)
 
-### Other harnesses (DeepSeek & friends)
+### DeepSeek Harness plugin (dsh bundle)
 
-[`harness/deepseek/`](harness/deepseek/) adapts the same four scripts to any OpenAI-compatible function-calling harness: a distilled system prompt, a `tools.json` manifest, and a zero-dependency `agent.py` (whitelisted endpoint, path-bounded tool runner). See its [README](harness/deepseek/README.md).
+[`harness/deepseek/`](harness/deepseek/) is a plugin for the official [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`, "Everything is a Plugin", built on the Cordis kernel), following its published bundle format: a `package.json` with a `dsh.bundle` manifest, a `cordis.patch.yml` config layer, and an `index.js` that registers four `defineTool` tools (`weaveboard_validate_board` / `weaveboard_new_board` / `weaveboard_inject_data` / `weaveboard_sync_engine`) into `ctx.tools`. Install with `dsh plugin --profile <name> add ./harness/deepseek`. The tool chain (whitelisted tools, cwd/plugin-dir path boundary, `shell:false` spawns, canonical `{ok, output}` return values) is smoke-tested against the published `@deepseek-ai/dsh-tools`. See its [README](harness/deepseek/README.md).
 
 ## Data model in 30 seconds
 

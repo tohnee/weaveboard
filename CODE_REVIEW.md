@@ -1,5 +1,35 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代六：全量安全扫描 + 按 DeepSeek Harness 官方规范重写插件
+
+### 全量安全扫描（mimosa deep scan）
+
+- 结论：**0 发现**，扫描封印 `sha256:ad5a49516de2dc295560cca89ac0c41fec491942d40d59b48e89e38feccbb879`，scanId `scan-2026-09-16T04-46-00.392Z-d002f58bf005`（证据边界：static_only_no_runtime_execution）。
+- 迭代五中安全 hook 拦截的 SSRF / 命令注入模式（agent.py 时代）在最终代码中已不存在——本轮直接删除了整个 OpenAI 适配层。
+
+### DeepSeek Harness 官方规范调研（推翻上一轮假设）
+
+- 上一轮 README 曾写"DeepSeek 官方没有发布名为 harness 的插件规范"——**该判断错误**。官方项目真实存在：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)（CLI `dsh`，"Everything is a Plugin"，Cordis 内核），产品页 [deepseek.com/harness](https://www.deepseek.com/harness/en/)，文档 [deepseek-harness.github.io](https://deepseek-harness.github.io/deepseek-harness/en/develop/basic/)，`@deepseek-ai/dsh-tools` 已发布 npm。
+- 插件真实形态：导出 `apply(ctx)` 的 ESM 模块 + `inject=['tools']`，`ctx.tools.register(defineTool({...}))`；分发为 bundle（package.json 声明 `dsh.bundle` 指向 `cordis.patch.yml` 配置层），`dsh plugin --profile <name> add <path>` 安装。
+
+### 重写 harness/deepseek/ 为官方 dsh bundle
+
+- 新结构：`package.json`（dsh.bundle 清单，files 只含 index.js/cordis.patch.yml/scripts/README）+ `cordis.patch.yml` + `index.js`（defineTool × 4）+ `scripts/`（执行器与四个工具脚本，与 skill 同源）。删除 agent.py / tools.json / system_prompt.md。
+- 引擎不随包分发：首跑 `weaveboard_sync_engine` 从 GitHub 拉最新引擎（避免第三份入库副本漂移）；`assets/` 加入 .gitignore。
+- 契约对齐：参数 DSL（`{type, required, description}`）、`output.schema` 值 schema、`output.render` 模型侧内容、`presentCall` 纯函数卡片投影、`exec.signal` 透传子进程、退出码语义（0 成功 / 1 领域失败返回 `ok:false` / ≥2 基础设施或策略拒绝抛 isError）。
+
+### 执行器加固（run_tool.mjs，skill 与 bundle 双份同步）
+
+- 修复：`output_path` 之前按位置参数传给 new_board.mjs（期望 `-o` 标志）被静默忽略——改为 positional/flags 映射表。
+- 修复：flags-only 调用（缺 data_path）会把 `-o` 误当位置参数——新增 `min` 最少位置参数约束 + 连续前缀校验，统一 exit 2 拒绝。
+- 新增：未知参数名拒绝（白名单之外一律 exit 2）。
+- sync_engine.sh：`--http1.1` + 3 次重试（实测 raw.githubusercontent.com HTTP/2 偶发 framing/SSL 错误）；网络总失败改 exit 2（基础设施故障 → isError），下载内容无效保持 exit 1。
+
+### 回归验证
+
+- 执行器矩阵（bundle+skill 双份）：正常链路 exit 0；`/etc/passwd` 越界 exit 2；未知参数 exit 2；缺必传位置参数 exit 2；`-o` 输出路径生效（115,647 字节成品 HTML 含内嵌数据）。
+- **真实 dsh-tools 冒烟**（/tmp 安装 `@deepseek-ai/dsh-tools@0.0.1-rc.1` 全家 + 桩 ctx 驱动 apply）：首轮抓出两处只对着已发布包才会暴露的契约违规——value schema 对象必须显式 `additionalProperties`、不支持对象级 `required` 数组（改属性内联 `required: true`）；修复后 4 工具注册、validate/new_board 执行、越界抛错、render/presentCall 契约全部通过。
+
 ## 2026-09 迭代五：Claude 风格重设计 + 工程管理强化 + harness 适配
 
 ### UI（Claude 设计语言）
