@@ -54,9 +54,11 @@
 |---|---|
 | `parentId` | 父级卡片 id；顶层任务省略。**不得成环** |
 | `wbsOrder` | 同级排序号，从 1 起 |
-| `status` | `not-started` 未开始 / `in-progress` 进行中 / `blocked` 受阻 / `done` 已完成 |
+| `status` | `not-started` 未开始 / `in-progress` 进行中 / `in-review` 待评审 / `blocked` 受阻 / `done` 已完成。vibe coding 流转：AI 生成（in-progress）→ 人工评审（in-review）→ 完成 |
 | `priority` | `low` / `medium` / `high` / `critical` |
-| `assignee` | 负责人姓名 |
+| `assignee` | 负责人姓名（agent 执行的任务可写 agent 名，如 "Claude"） |
+| `executor` | 可选：`ai` AI 生成 / `human` 人工执行 / `pair` 人机结对；卡片与看板会显示徽标 |
+| `acceptance` | 可选：验收标准（一句话可验证，如"E2E 三条链路在 CI 全绿"）。AI 任务的完成判据，缺失时校验器给提醒 |
 | `startDate` / `dueDate` | 起止日期；**两个都有才参与关键路径计算**，且 start ≤ due |
 | `estimateHours` / `actualHours` | 预计/实际工时（数字） |
 | `progress` | 0–100（数字）；status 为 done 时应用会强制 100 |

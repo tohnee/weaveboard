@@ -6,7 +6,8 @@ import { readFile } from 'node:fs/promises';
 
 const TRACKED = new Set(['task', 'milestone', 'blocker']);
 const KINDS = new Set(['task', 'milestone', 'note', 'person', 'place', 'document', 'image', 'blocker', 'risk', 'decision']);
-const STATUS = new Set(['not-started', 'in-progress', 'blocked', 'done']);
+const STATUS = new Set(['not-started', 'in-progress', 'in-review', 'blocked', 'done']);
+const EXECUTORS = new Set(['ai', 'human', 'pair']);
 const PRIORITY = new Set(['low', 'medium', 'high', 'critical']);
 const DEP_TYPES = new Set(['FS', 'SS', 'FF', 'SF']);
 const LEVELS = new Set(['low', 'medium', 'high']);
@@ -32,6 +33,7 @@ for (const c of d.cards || []) {
   if (c.kind && !KINDS.has(c.kind)) errors.push(`卡片类型无效: ${label} (${c.kind})`);
   if (c.progress != null && (c.progress < 0 || c.progress > 100)) errors.push(`进度超出 0-100: ${label}`);
   if (c.status && !STATUS.has(c.status)) errors.push(`状态无效: ${label}`);
+  if (c.executor && !EXECUTORS.has(c.executor)) errors.push(`执行者无效（ai/human/pair）: ${label}`);
   if (c.priority && !PRIORITY.has(c.priority)) errors.push(`优先级无效: ${label}`);
   if (c.startDate && c.dueDate && Date.parse(c.startDate) > Date.parse(c.dueDate)) errors.push(`开始日期晚于截止日期: ${label}`);
   if (c.riskProb && !LEVELS.has(c.riskProb)) errors.push(`风险概率无效: ${label}`);
@@ -60,6 +62,7 @@ for (const c of d.cards || []) {
   if (TRACKED.has(c.kind) && (!c.startDate || !c.dueDate)) warnings.push(`任务缺起止日期，将不参与关键路径: ${c.title || c.id}`);
   if (c.kind === 'risk' && !c.mitigation) warnings.push(`风险未写应对措施: ${c.title || c.id}`);
   if (TRACKED.has(c.kind) && !(Number(c.estimateHours) > 0)) warnings.push(`任务缺预计工时，影响 SPI/CPI 与加权进度: ${c.title || c.id}`);
+  if (c.kind === 'task' && c.executor === 'ai' && !c.acceptance) warnings.push(`AI 任务缺验收标准，agent 无法自证完成: ${c.title || c.id}`);
 }
 const depEdges = (d.edges || []).filter(e => e.dependencyType);
 if ((d.cards || []).filter(c => TRACKED.has(c.kind)).length > 1 && depEdges.length === 0) {

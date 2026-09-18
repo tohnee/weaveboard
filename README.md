@@ -4,9 +4,9 @@
 
 *formerly Weaveboard*
 
-**Offline-first project management for technical teams — in a single HTML file.**
+**Offline-first project management for technical teams — in a single HTML file. Built for vibe coding: AI drafts → human review → verified done.**
 
-WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · ADR Decisions · Kanban · Excel/Word Export
+AI-pair workflows (executor labels · acceptance criteria · review stage) · WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · ADR Decisions · Kanban · Excel/Word Export
 
 *Drafting-studio design: cool film-grid canvas, white cards, Prussian ink and a red-pencil critical path — plans drawn on drafting paper.*
 

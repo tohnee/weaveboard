@@ -1,5 +1,21 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代八：vibe coding 工作流支持（引擎 v7）
+
+### 新能力（管理 AI 结对开发项目）
+
+- **`in-review` 待评审状态**：状态机从 4 态扩为 5 态（not-started/in-progress/in-review/blocked/done），看板 5 列、看板推进链变为 生成→评审→完成、WBS/检查器下拉自动出现、仪表盘新增"待评审"统计卡（≥3 标红）。向后兼容：旧数据无该状态照常打开。
+- **`executor` 执行者字段**（ai AI 生成 / human 人工执行 / pair 人机结对）：卡片 foot 与看板卡显示徽标（AI 徽标蓝底），检查器下拉编辑。
+- **`acceptance` 验收标准字段**：任务级 textarea；校验器对"AI 任务缺验收标准"给提醒（agent 完成判据）。
+- **vibe coding 项目模板**（模板对话框第一项）：14 卡片完整示例——AI 起草/人工评审/验证门任务、接口文档阻塞（在关键路径上）、上下文漂移与安全漏洞两条 vibe 特有风险、两条 ADR（AI 边界、E2E 先行）。关键路径五项零浮时：接口阻塞→下单起草→验证门→M2→上线。
+- 修复遗留：看板列 `data-col` 属性此前未输出（受阻/评审列底色 CSS 是死代码），本轮补上。
+
+### 同步与验证
+
+- validate_board.mjs 三处同步（skills/、harness/deepseek/scripts/、~/.zcode/）：STATUS 增 in-review、EXECUTORS 枚举校验、AI 任务缺验收提醒；schema.md/authoring.md 新增字段与 vibe coding 编写规范一节。
+- 浏览器 E2E：模板载入（看板 5 列计数正确、in-review 列底色、6 个 AI 徽标）、推进链两跳（in-progress→in-review→done）、检查器 executor/acceptance 字段读写；无头校验器对页面真实状态 0 错误 0 警告，CPM 五项关键路径正确。
+- 四张 README 截图换为 vibe 模板；docs/index.html 与 skill 引擎资产同步 v7。
+
 ## 2026-09 迭代七：改名 Task Board + 制图桌视觉重做（引擎 v6）
 
 ### 改名（用户可见面）
