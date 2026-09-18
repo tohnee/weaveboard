@@ -8,7 +8,7 @@
 
 AI-pair workflows (executor labels · acceptance criteria · review stage) · WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · ADR Decisions · Kanban · Excel/Word Export
 
-*Drafting-studio design: cool film-grid canvas, white cards, Prussian ink and a red-pencil critical path — plans drawn on drafting paper.*
+*Obsidian dark studio: deep neutral canvas, glowing indigo accents, luminous critical-path ropes — the native habitat of vibe coding.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)

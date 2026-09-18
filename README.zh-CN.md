@@ -8,7 +8,7 @@
 
 AI 结对工作流（执行者标注 · 验收标准 · 待评审环节）· WBS 任务分解 · CPM 关键路径 · 基线与偏差 · SPI/CPI 效率 · 风险登记册 · ADR 决策记录 · 状态看板 · Excel / Word 导出
 
-*制图桌设计语言：冷调胶片网格画布、纯白卡片、普鲁士墨蓝与红铅笔关键路径——计划画在制图纸上。*
+*Obsidian 暗色工作室：中性深底、靛蓝霓光点缀、发光的关键路径绳索——vibe coding 的原生栖息地。*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
