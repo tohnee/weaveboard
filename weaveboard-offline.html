@@ -144,6 +144,7 @@ button{cursor:pointer;color:inherit}
 </style>
 <style>
 .rope-canvas{position:absolute;z-index:0;inset:0;width:2400px;height:1600px;pointer-events:none}
+.layout-anim .card{transition:left .62s cubic-bezier(.25,.9,.3,1),top .62s cubic-bezier(.25,.9,.3,1),box-shadow .15s,border-color .15s}
 .card-layer{z-index:10!important}
 .trip-board{padding:20px;min-width:820px}
 .trip-hero{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:18px;border-radius:14px;background:linear-gradient(135deg,#1B2140,#141830);border:1px solid #2A3350;color:#EFF0FA;box-shadow:0 16px 36px #00000080}
@@ -406,8 +407,57 @@ function renderDashboard(){const tasks=state.cards.filter(c=>TRACKED.has(c.kind)
 function renderTrip(){const root=state.cards.find(c=>c.travelType==='trip'),items=state.cards.filter(c=>c.travelType&&c.travelType!=='trip'),groups=new Map;for(const c of items){const d=Math.max(0,Number(c.day)||0);groups.set(d,[...(groups.get(d)||[]),c])}for(const list of groups.values())list.sort((a,b)=>(a.startDate||'').localeCompare(b.startDate||'')||(a.startTime||'99:99').localeCompare(b.startTime||'99:99'));const money=new Map;for(const c of state.cards)if(Number(c.cost)>0)money.set(c.currency||'CNY',(money.get(c.currency||'CNY')||0)+Number(c.cost));const moneyText=[...money].map(([k,v])=>`${k} ${v.toLocaleString('zh-CN',{maximumFractionDigits:2})}`).join(' · ')||'尚未填写',confirmed=items.filter(c=>['booked','confirmed','completed'].includes(c.bookingStatus)).length,pending=items.filter(c=>['idea','planned'].includes(c.bookingStatus)).length,dates=root?.startDate&&root?.dueDate?`${root.startDate} → ${root.dueDate}`:'日期待定',el=$('#altView');el.innerHTML=`<div class="trip-board"><section class="trip-hero"><div><span class="eyebrow">TRAVEL BOARD</span><h2>${esc(root?.title||state.board.name||'旅行规划')}</h2><p>${esc(root?.city||'目的地待定')} · ${esc(dates)}</p></div><span class="trip-stat"><b>${groups.size}</b>日程组</span><span class="trip-stat"><b>${confirmed}</b>已预订/确认</span><span class="trip-stat"><b>${pending}</b>待决定</span><span class="trip-stat"><b>${esc(moneyText)}</b>已录入费用</span><button class="btn primary" id="tripNew" style="margin-left:auto">＋ 行程项目</button></section>${items.length?`<div class="trip-days">${[...groups].sort((a,b)=>a[0]-b[0]).map(([day,list])=>{const date=list.find(c=>c.startDate)?.startDate||(day&&root?.startDate?new Date(Date.parse(root.startDate)+(day-1)*864e5).toISOString().slice(0,10):'准备阶段');return`<section class="trip-day"><header><div><time>${esc(date)}</time><h3>${day?`Day ${day}`:'出发前 / 总览'}</h3></div><span class="booking">${list.length} 项</span></header>${list.map(c=>{const risk=c.status==='blocked',pending=['idea','planned'].includes(c.bookingStatus),statusClass=risk?'risk':pending?'pending':'',cost=Number(c.cost)>0?`${c.currency||'CNY'} ${Number(c.cost).toLocaleString('zh-CN')}`:'';return`<div class="trip-item" data-trip-id="${c.id}" style="--trip-accent:${c.accent||palette[c.kind]||'#7CB8A4'}"><time>${esc(c.startTime||'弹性')}</time><i></i><div><b>${esc(c.title)}</b><small>${esc(c.city||'')}${c.address?` · ${esc(c.address)}`:''}${cost?` · ${esc(cost)}`:''}</small></div><em class="booking ${statusClass}">${esc(risk?'受阻':BOOKING_STATUS[c.bookingStatus]||'待计划')}</em></div>`}).join('')}</section>`}).join('')}</div>`:'<div class="empty-inspector"><div><b>还没有旅行项目</b><span>点击“行程项目”添加交通、住宿、景点、餐饮或预算。</span></div></div>'}</div>`;$('#tripNew').onclick=travelComposer;el.querySelectorAll('[data-trip-id]').forEach(n=>n.onclick=()=>{selected=n.dataset.tripId;renderInspector();el.querySelectorAll('[data-trip-id]').forEach(x=>x.style.background=x===n?'#232B3D':'')})}
 function renderTimeline(){const rows=wbsRows().filter(r=>r.c.startDate||r.c.dueDate).sort((a,b)=>Date.parse(a.c.startDate||a.c.dueDate)-Date.parse(b.c.startDate||b.c.dueDate));$('#altView').innerHTML=`<div class="wbs-summary"><h2>项目时间线</h2><span><b>${rows.length}</b>有日期任务</span></div><div class="timeline-list">${rows.map(r=>`<div class="timeline-item"><time>${esc(r.c.startDate||r.c.dueDate)}</time><span class="timeline-dot"><i></i></span><article class="timeline-card"><span class="eyebrow">${r.code} · ${esc(STATUS[r.c.status]||'未开始')}</span><h3>${esc(r.c.title)}</h3><p>${esc(r.c.assignee||'未分配')} · ${esc(r.c.startDate||'—')} → ${esc(r.c.dueDate||'—')}</p></article></div>`).join('')||'<div class="empty-inspector"><b>还没有日期信息</b></div>'}</div>`}
 function syncViewButtons(){const travel=state.board.template==='travel';$$('.view').forEach(b=>{const v=b.dataset.view;b.classList.toggle('hidden',v==='trip'?!travel:travel&&(v==='dashboard'||v==='kanban'))})}
-function switchView(v){if(state.board.template==='travel'&&(v==='dashboard'||v==='kanban'))v='space';if(state.board.template!=='travel'&&v==='trip')v='space';view=v;state.board.view=v;syncViewButtons();$$('.view').forEach(b=>b.classList.toggle('active',b.dataset.view===v));const alt=$('#altView'),canvas=$('#canvas');if(v==='dashboard'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderDashboard()}else if(v==='kanban'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderKanban()}else if(v==='wbs'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderWbs()}else if(v==='trip'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderTrip()}else if(v==='timeline'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderTimeline()}else{alt.classList.add('hidden');canvas.classList.remove('hidden');if(v==='graph')graphLayout();renderCards()}save()}
-function graphLayout(){const n=state.cards.length,cx=780,cy=500,rx=480,ry=330;state.cards.forEach((c,i)=>{const a=Math.PI*2*i/Math.max(1,n)-Math.PI/2;c.x=cx+Math.cos(a)*rx-c.w/2;c.y=cy+Math.sin(a)*ry-60;c.tilt=0});fit();save()}
+function switchView(v){if(state.board.template==='travel'&&(v==='dashboard'||v==='kanban'))v='space';if(state.board.template!=='travel'&&v==='trip')v='space';view=v;state.board.view=v;syncViewButtons();$$('.view').forEach(b=>b.classList.toggle('active',b.dataset.view===v));const alt=$('#altView'),canvas=$('#canvas');if(v==='dashboard'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderDashboard()}else if(v==='kanban'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderKanban()}else if(v==='wbs'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderWbs()}else if(v==='trip'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderTrip()}else if(v==='timeline'){alt.classList.remove('hidden');canvas.classList.add('hidden');renderTimeline()}else{alt.classList.add('hidden');canvas.classList.remove('hidden');if(v==='graph')graphLayout();else renderCards()}save()}
+function graphLayout(){
+// 分层布局（Sugiyama 框架）：依赖边按最长路径分层（DFS 去环）→
+// 层内重心法交替扫描减少交叉 → 无依赖的关联对象（文档/人物/风险）吸附到
+// 关系对象的层 → 孤立节点放最右列；坐标按层分列、层内垂直居中。
+const byId=new Map(state.cards.map(c=>[c.id,c])),N='\u0000';
+const depE=[],relE=[];
+for(const e of state.edges){if(!byId.has(e.from)||!byId.has(e.to))continue;(e.dependencyType?depE:relE).push(e)}
+const adj=new Map(state.cards.map(c=>[c.id,[]]));depE.forEach(e=>adj.get(e.from).push(e.to));
+const color=new Map(),back=new Set();
+const dfs=id=>{color.set(id,1);for(const t of adj.get(id)){if(color.get(t)===1)back.add(id+N+t);else if(!color.get(t))dfs(t)}color.set(id,2)};
+state.cards.forEach(c=>{if(!color.get(c.id))dfs(c.id)});
+const dag=depE.filter(e=>!back.has(e.from+N+e.to));
+const layer=new Map(state.cards.map(c=>[c.id,0]));
+for(let it=0;it<state.cards.length;it++){let ch=false;for(const e of dag){const nl=layer.get(e.from)+1;if(nl>(layer.get(e.to)??0)){layer.set(e.to,nl);ch=true}}if(!ch)break}
+const inDag=new Set();dag.forEach(e=>{inDag.add(e.from);inDag.add(e.to)});
+const linked=new Set();state.edges.forEach(e=>{linked.add(e.from);linked.add(e.to)});
+let maxL=0;layer.forEach(l=>maxL=Math.max(maxL,l));
+for(const c of state.cards){
+  if(inDag.has(c.id))continue;
+  let best=-1;
+  for(const e of relE){if(e.from===c.id&&inDag.has(e.to))best=Math.max(best,layer.get(e.to));if(e.to===c.id&&inDag.has(e.from))best=Math.max(best,layer.get(e.from))}
+  if(best>=0)layer.set(c.id,best);           // 关联对象与锚点同层
+  else if(!linked.has(c.id))layer.set(c.id,maxL+1); // 孤立节点单独一列
+}
+const cols=new Map();
+state.cards.forEach(c=>{const l=layer.get(c.id);if(!cols.has(l))cols.set(l,[]);cols.get(l).push(c)});
+const pos=new Map();
+const norm=()=>{cols.forEach(list=>list.forEach((c,i)=>pos.set(c.id,list.length>1?i/(list.length-1):.5)))};
+norm();
+const nbs=id=>{const r=[];for(const e of state.edges){if(e.from===id)r.push(e.to);else if(e.to===id)r.push(e.from)}return r};
+for(let sweep=0;sweep<4;sweep++){                       // 重心法交替扫描降交叉
+  const ls=[...cols.keys()].sort((a,b)=>sweep%2?a-b:b-a);
+  for(const l of ls){const list=cols.get(l);
+    list.forEach(c=>{let s=0,n=0;for(const nb of nbs(c.id))if(pos.has(nb)){s+=pos.get(nb);n++}c._b=n?s/n:(pos.get(c.id)||.5)});
+    list.sort((a,b)=>a._b-b._b)}
+  norm()}
+const COL=336,ROW=28,X0=110;
+cols.forEach((list,l)=>{
+  const hs=list.map(c=>cardHeight(c)),totalH=hs.reduce((s,h)=>s+h,0)+ROW*(list.length-1);
+  let y=Math.max(96,740-totalH/2);
+  list.forEach((c,i)=>{c.x=X0+l*COL;c.y=Math.round(y);y+=hs[i]+ROW;c.tilt=0;c._b=undefined})});
+// 平滑过渡：现有卡片 DOM 位移动画，绳索端点逐帧跟随锚点、中段物理回弹
+const els=new Map([...$('#cardLayer').querySelectorAll('.card')].map(n=>[n.dataset.id,n]));
+if(els.size===state.cards.length){
+  document.body.classList.add('layout-anim');
+  state.cards.forEach(c=>{const el=els.get(c.id);if(el){el.style.left=c.x+'px';el.style.top=c.y+'px'}});
+  updateRopes();
+  setTimeout(()=>{document.body.classList.remove('layout-anim');fit();save()},680)
+}else{renderCards();fit();save()}
+}
 function fit(){if(!state.cards.length)return;const xs=state.cards.map(c=>c.x),ys=state.cards.map(c=>c.y),xe=state.cards.map(c=>c.x+c.w),ye=state.cards.map(c=>c.y+cardHeight(c)),minX=Math.min(...xs),minY=Math.min(...ys),maxX=Math.max(...xe),maxY=Math.max(...ye),r=$('#canvas').getBoundingClientRect(),z=clamp(Math.min((r.width-100)/(maxX-minX),(r.height-100)/(maxY-minY)),.35,1.15);camera().zoom=z;camera().offsetX=(r.width-(maxX-minX)*z)/2-minX*z;camera().offsetY=(r.height-(maxY-minY)*z)/2-minY*z;applyCamera();save()}
 function validate(d){const errors=[],ids=new Set;for(const c of d.cards||[]){if(!c.id||ids.has(c.id))errors.push('卡片 ID 缺失或重复');ids.add(c.id);if(!Number.isFinite(c.x)||!Number.isFinite(c.y))errors.push(`卡片 ${c.title||c.id} 坐标无效`);if(c.progress!=null&&(c.progress<0||c.progress>100))errors.push(`卡片 ${c.title||c.id} 进度超出 0-100`);if(c.startDate&&c.dueDate&&Date.parse(c.startDate)>Date.parse(c.dueDate))errors.push(`卡片 ${c.title||c.id} 开始日期晚于截止日期`);if(c.travelType&&!TRAVEL_TYPES[c.travelType])errors.push(`旅行项目 ${c.title||c.id} 类型无效`);if(c.day!=null&&(!Number.isInteger(Number(c.day))||Number(c.day)<0))errors.push(`旅行项目 ${c.title||c.id} 天数序号无效`);if(c.cost!=null&&(!Number.isFinite(Number(c.cost))||Number(c.cost)<0))errors.push(`旅行项目 ${c.title||c.id} 费用无效`);if(c.bookingStatus&&!BOOKING_STATUS[c.bookingStatus])errors.push(`旅行项目 ${c.title||c.id} 预订状态无效`);if(c.riskProb&&!(c.riskProb in LEVELS))errors.push(`风险 ${c.title||c.id} 概率取值无效`);if(c.riskImpact&&!(c.riskImpact in LEVELS))errors.push(`风险 ${c.title||c.id} 影响取值无效`);if(c.riskResponse&&!(c.riskResponse in RISK_RESPONSE))errors.push(`风险 ${c.title||c.id} 应对策略无效`);if(c.decisionStatus&&!(c.decisionStatus in DECISION_STATUS))errors.push(`决策 ${c.title||c.id} 状态无效`);if(c.startTime&&c.endTime&&c.startDate===c.dueDate&&c.startTime>c.endTime)errors.push(`旅行项目 ${c.title||c.id} 结束时间早于开始时间`)}for(const e of d.edges||[]){if(!ids.has(e.from)||!ids.has(e.to))errors.push(`关系 ${e.id||''} 指向不存在对象`);if(e.dependencyType&&!(e.dependencyType in DEP_TYPES))errors.push(`关系 ${e.id||''} 依赖类型无效`)}if(d.board?.baseline?.dates)for(const id of Object.keys(d.board.baseline.dates))if(!ids.has(id))errors.push(`基线引用了不存在对象 ${id}`);for(const c of d.cards||[])if(c.parentId&&!ids.has(c.parentId))errors.push(`卡片 ${c.title||c.id} 父级不存在`);for(const c of d.cards||[]){const seen=new Set([c.id]);let p=c.parentId;while(p){if(seen.has(p)){errors.push(`WBS 层级存在循环：${c.title||c.id}`);break}seen.add(p);p=(d.cards.find(x=>x.id===p)||{}).parentId}}return errors}
 function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
