@@ -1,12 +1,14 @@
 <div align="center">
 
-# Weaveboard · 技术项目管理面板
+# Task Board · 技术项目管理面板
+
+*原名 Weaveboard*
 
 **单文件 HTML 的离线项目管理看板——数据永不离机。**
 
 WBS 任务分解 · CPM 关键路径 · 基线与偏差 · SPI/CPI 效率 · 风险登记册 · ADR 决策记录 · 状态看板 · Excel / Word 导出
 
-*Claude 风格设计语言：暖象牙底、黏土橙点缀、衬线标题——一本"纸质感的工程台账"。*
+*制图桌设计语言：冷调胶片网格画布、纯白卡片、普鲁士墨蓝与红铅笔关键路径——计划画在制图纸上。*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
@@ -20,7 +22,7 @@ WBS 任务分解 · CPM 关键路径 · 基线与偏差 · SPI/CPI 效率 · 风
 
 ![概览驾驶舱](docs/assets/dashboard.png)
 
-大多数项目管理工具要账号、要服务器、要你的数据。Weaveboard 反其道而行：**一个 HTML 文件、零依赖、数据只存在你的浏览器里**。双击打开就是一个完整的技术项目管理驾驶舱——任务分解、依赖网络、关键路径推演、风险登记、决策记录，以及真正的 Excel / Word 导出。它同时是一个 **agent skill**：AI 助手可以把一份项目简报直接变成可用的看板文件。
+大多数项目管理工具要账号、要服务器、要你的数据。Task Board 反其道而行：**一个 HTML 文件、零依赖、数据只存在你的浏览器里**。双击打开就是一个完整的技术项目管理驾驶舱——任务分解、依赖网络、关键路径推演、风险登记、决策记录，以及真正的 Excel / Word 导出。它同时是一个 **agent skill**：AI 助手可以把一份项目简报直接变成可用的看板文件。
 
 ## 核心特性
 

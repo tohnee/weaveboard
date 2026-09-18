@@ -1,5 +1,28 @@
 # Weaveboard Offline 代码审查与修复说明
 
+## 2026-09 迭代七：改名 Task Board + 制图桌视觉重做（引擎 v6）
+
+### 改名（用户可见面）
+
+- 产品更名 **Task Board**（原 Weaveboard）：`<title>`、顶栏品牌（新 SVG 网格徽标 + "PROJECT PLANNING · LOCAL FIRST"）、hint 文案（编织→建立）、docx 报告头与 Heading1 色（绿→普鲁士蓝 1F4A96）、中英 README 标题与首段（标注"原名 Weaveboard"）、docs/index.html（Pages 应用本体，与引擎同步 v6）。
+- 技术标识不变：weaveboard/v2 数据契约、seed 标签 id、LocalStorage 键、GitHub 仓库名与 URL（外发身份，未动）。
+
+### 视觉系统：制图桌（Drafting Studio）
+
+- 两个 `<style>` 块整块重写（选择器集合不变，纯换肤零结构风险）：冷调胶片底 #EDF1F6 / 画布制图纸 #F7F9FC（蓝灰细网格）/ 纯白卡片 / 普鲁士墨蓝 #1B2A41 / 行动蓝 #2D5FB8 / 红铅笔 #D9483B 关键路径 / 琥珀 #C07A15 受阻 / 等宽数字，全部去衬线。
+- 签名元素：顶栏分段式视图切换器（凹槽轨道+白卡选中）；深普鲁士渐变 hero；卡片完全水平（移除 tilt 渲染，数据保留）；绳索重绘为制图连线（普通钢蓝 .58α、活跃 .95α、关键路径砖红 #C93A2E 2.6px .85α、冷影 #1B2A41 .12α）。
+- 新功能：WBS 甘特表头日期刻度（min..max 均分 6 格 MM-DD 等宽小字，renderWbs 内联生成）。
+
+### 两轮视觉迭代（浏览器实测 + 视觉模型评审）
+
+- 首轮评审（概览 7.5 / 空间 85 / WBS 8.5 / 看板 8.7）后修：hero 警示卡浅红底深红字提对比；顶栏投影；甘特计划条加深 + 日期刻度；进度/负载条轨道加深；卡片去倾斜；关键绳索降饱和变细；看板白卡加投影、受阻列淡底、进度条 5px。
+- 二轮评审（概览 8 / 空间 8.5 / WBS 8.5-9）后修：受阻甘特条红→琥珀（与关键路径红框解耦）；关键行去红色标题（保留行底+红框+红编号）；工具栏投影加档。
+- 功能冒烟：七视图切换、检查器编辑、设为基线（基线偏差 chip 出现）、6 格刻度、撤销/重做按钮、toast 均正常；JS 语法检查通过。
+
+### 产物同步
+
+- 四张 README 截图重拍（docs/assets/{dashboard,space,wbs,kanban}.png，1440×900）；skill 引擎资产同步 v6（skills/weaveboard-pm/assets/）。
+
 ## 2026-09 迭代六：全量安全扫描 + 按 DeepSeek Harness 官方规范重写插件
 
 ### 全量安全扫描（mimosa deep scan）

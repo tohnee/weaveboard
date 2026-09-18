@@ -1,12 +1,14 @@
 <div align="center">
 
-# Weaveboard
+# Task Board
+
+*formerly Weaveboard*
 
 **Offline-first project management for technical teams — in a single HTML file.**
 
 WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · ADR Decisions · Kanban · Excel/Word Export
 
-*Claude-inspired design: warm ivory, clay accents, serif headings — an engineering ledger that feels like paper, works like an instrument.*
+*Drafting-studio design: cool film-grid canvas, white cards, Prussian ink and a red-pencil critical path — plans drawn on drafting paper.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-245d4d.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-6b8f7a.svg)](#)
@@ -20,7 +22,7 @@ WBS · CPM Critical Path · Baseline & Variance · SPI/CPI · Risk Register · A
 
 ![Dashboard](docs/assets/dashboard.png)
 
-Most PM tools want an account, a server, and your data. Weaveboard is the opposite: **one HTML file, zero dependencies, data never leaves the machine**. Double-click it and you get a full technical-PM cockpit — work breakdown, dependency network, CPM critical path, a risk register, decision records, and real Excel/Word export. It also ships as an **agent skill**, so an AI assistant can turn a project brief into a working board.
+Most PM tools want an account, a server, and your data. Task Board is the opposite: **one HTML file, zero dependencies, data never leaves the machine**. Double-click it and you get a full technical-PM cockpit — work breakdown, dependency network, CPM critical path, a risk register, decision records, and real Excel/Word export. It also ships as an **agent skill**, so an AI assistant can turn a project brief into a working board.
 
 ## Why you might like it
 
